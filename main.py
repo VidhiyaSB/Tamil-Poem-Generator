@@ -3,10 +3,15 @@ from groq import Groq
 import os
 
 # Directly provide the API key (for demonstration purposes, but it's not recommended for production)
-API_KEY = "your_api_key"
+
+# Access the API key from Streamlit secrets
+llama_api_key = st.secrets["api_keys"]["LLAMA_API_KEY"]
+
+# Use the API key in your app
+
 
 # Initialize the Groq client
-client = Groq(api_key=API_KEY)
+client = Groq(api_key=llama_api_key)
 
 def generate_tamil_poetry(style, theme, max_tokens=500):
     system_prompt = """You are a master Tamil poet with deep knowledge of Tamil literature and linguistics. 
