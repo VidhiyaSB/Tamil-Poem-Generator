@@ -129,7 +129,7 @@ def quality_check(poem):
     
     return poem
 
-st.title("Advanced Tamil Poetry Generator")
+st.title("Tamil Poetry Generator")
 
 style = st.selectbox("Choose a poetry style:", ["Haiku", "Venba", "Free Verse"])
 theme = st.text_input("Enter a theme for your poem:")
