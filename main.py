@@ -1,6 +1,7 @@
 import streamlit as st
 from groq import Groq
 import re
+import random
 
 # Access the API key from Streamlit secrets
 llama_api_key = st.secrets["api_keys"]["LLAMA_API_KEY"]
@@ -8,55 +9,79 @@ llama_api_key = st.secrets["api_keys"]["LLAMA_API_KEY"]
 # Initialize the Groq client
 client = Groq(api_key=llama_api_key)
 
-def generate_tamil_poetry(style, theme, max_tokens=1000):
-    system_prompt = """You are a master Tamil poet with deep knowledge of Tamil literature, linguistics, and culture. 
-    Generate authentic, high-quality Tamil poetry that strictly adheres to the requested style and theme. 
-    Ensure all Tamil words are spelled correctly, use proper punctuation, and create meaningful content that resonates with Tamil culture and traditions.
-    The English translation must accurately reflect the Tamil content, including its nuances and cultural references."""
+# Tamil literature resources
+tamil_proverbs = [
+    "அகத்தின் அழகு முகத்தில் தெரியும்",
+    "யானை இருந்தாலும் குதிரை இருந்தாலும் ஓட்டுநர் திறமையே முக்கியம்",
+    "கற்றது கைமண் அளவு, கல்லாதது உலகளவு"
+]
+
+tamil_literary_works = [
+    "திருக்குறள்", "சிலப்பதிகாரம்", "மணிமேகலை", "தொல்காப்பியம்", "புறநானூறு"
+]
+
+def generate_tamil_poetry(style, theme, max_tokens=1200):
+    system_prompt = """You are a renowned Tamil poet with unparalleled expertise in Tamil literature, linguistics, and culture. 
+    Your task is to generate exceptional, authentic Tamil poetry that adheres strictly to the requested style and theme.
+    Ensure impeccable spelling, appropriate punctuation, and create profoundly meaningful content that resonates deeply with Tamil culture and traditions.
+    The English translation must precisely reflect the Tamil content, capturing all nuances, cultural references, and poetic devices.
+    
+    Key points to remember:
+    1. Use rich, evocative language that draws from Tamil literary tradition.
+    2. Incorporate culturally significant imagery, metaphors, and allusions.
+    3. Ensure perfect adherence to the chosen poetic form and its rules.
+    4. Create layers of meaning that invite reflection and interpretation.
+    5. Balance classical elements with contemporary relevance.
+    """
 
     style_prompts = {
         "haiku": f"""Create a Tamil haiku on '{theme}':
-        1. Three lines capturing a single moment or image.
-        2. Concise and evocative language with perfect spelling and punctuation.
-        3. Aim for about 10-14 syllables total.
-        4. Focus deeply on the theme: {theme}.
-        5. Use culturally relevant imagery and metaphors that resonate with Tamil heritage.
-        6. Ensure each word contributes to a meaningful and impactful message.""",
+        1. Three lines capturing a profound moment or image.
+        2. Concise, powerful language with flawless spelling and punctuation.
+        3. Adhere to the 5-7-5 syllable structure, adapting it thoughtfully for Tamil.
+        4. Delve deeply into the theme: {theme}, offering a unique perspective.
+        5. Use imagery that resonates strongly with Tamil heritage and natural environment.
+        6. Ensure each word is carefully chosen for maximum impact and meaning.""",
         
         "venba": f"""Compose a Tamil venba on '{theme}':
         1. Four lines: two கூற்று (kūṟṟu), one தாழிசை (tāḻicai), ending with சுருங்கடி (curuṅkaṭi).
-        2. Follow venba meter: நேர் (nēr) and நிரை (nirai) patterns with utmost precision.
-        3. Ensure the last foot of each line is இயற்சீர் (iyaṟcīr).
-        4. The final word must be a single syllable.
-        5. Theme: {theme} - explore it with depth and insight.
-        6. Incorporate classical Tamil concepts, proverbs, or references to literature.
-        7. Use flawless spelling and appropriate punctuation to enhance readability.""",
+        2. Follow venba meter with absolute precision: நேர் (nēr) and நிரை (nirai) patterns.
+        3. Ensure the last foot of each line is இயற்சீர் (iyaṟcīr), and the final word is a single syllable.
+        4. Theme: {theme} - explore it with profound insight and emotional depth.
+        5. Incorporate classical Tamil concepts, drawing from works like {random.choice(tamil_literary_works)}.
+        6. Use a relevant Tamil proverb or adapt one creatively: {random.choice(tamil_proverbs)}
+        7. Demonstrate mastery of Tamil prosody while maintaining natural, flowing language.""",
         
-        "free verse": f"""Write a Tamil free verse poem on '{theme}':
-        1. Use vivid Tamil imagery and metaphors that are deeply rooted in Tamil culture.
-        2. Incorporate classical Tamil literary devices like உவமை (uvmai) or உருவகம் (uruvakam) with precision.
-        3. Experiment with line breaks and punctuation for maximum emotional and aesthetic impact.
-        4. Blend traditional and modern elements to create a timeless piece.
-        5. Focus intently on the theme: {theme}, offering new perspectives or insights.
-        6. Ensure the poem has philosophical depth and strong cultural relevance.
-        7. Pay meticulous attention to spelling, word choice, and punctuation."""
+        "free verse": f"""Craft a Tamil free verse poem on '{theme}':
+        1. Use vivid, culturally rich imagery and metaphors deeply rooted in Tamil tradition.
+        2. Skillfully incorporate classical Tamil literary devices like உவமை (uvmai) or உருவகம் (uruvakam).
+        3. Experiment boldly with line breaks and punctuation for maximum emotional and aesthetic impact.
+        4. Seamlessly blend traditional and modern elements to create a timeless, yet contemporary piece.
+        5. Offer profound insights on the theme: {theme}, challenging conventional perspectives.
+        6. Ensure the poem has philosophical depth, drawing inspiration from Tamil philosophy and literature.
+        7. Pay meticulous attention to the musicality of the language, even in free verse form."""
     }
 
     user_prompt = style_prompts.get(style.lower(), style_prompts["free verse"])
-    user_prompt += """ 
+    user_prompt += f""" 
     Provide the poem in this format:
 
     தமிழ் (Tamil):
-    [Poem in Tamil script with perfect spelling and punctuation]
+    [Poem in Tamil script with perfect spelling, appropriate punctuation, and diacritical marks]
 
     ஒலிப்பெயர்ப்பு (Transliteration):
-    [Accurate Romanized transliteration with appropriate diacritical marks]
+    [Precise Romanized transliteration with all necessary diacritical marks]
 
     English Translation:
-    [Precise and poetic translation that captures the essence and cultural nuances]
+    [Eloquent and accurate translation that captures the essence, cultural nuances, and poetic devices]
 
     Explanation:
-    [Detailed explanation of poetic elements, cultural references, and how it profoundly relates to the theme. Include any wordplay, double meanings, or subtle cultural allusions.]
+    [Comprehensive explanation of poetic elements, cultural references, and thematic exploration. Include:
+    1. Analysis of the poem's structure and adherence to the chosen style.
+    2. Explanation of any wordplay, double meanings, or subtle cultural allusions.
+    3. Discussion of how the poem relates to the theme: {theme}.
+    4. Identification of any classical Tamil concepts or literary devices used.
+    5. Reflection on the poem's cultural and philosophical significance.]
     """
 
     try:
@@ -86,11 +111,25 @@ def format_poem(poem_text):
     return "\n\n".join(formatted_sections)
 
 def quality_check(poem):
-    # This function would implement additional quality checks
-    # For now, it's a placeholder for future enhancements
+    # Implement basic quality checks
+    checks = [
+        ("தமிழ் (Tamil):" in poem, "Tamil poem is missing"),
+        ("ஒலிப்பெயர்ப்பு (Transliteration):" in poem, "Transliteration is missing"),
+        ("English Translation:" in poem, "English translation is missing"),
+        ("Explanation:" in poem, "Explanation is missing"),
+    ]
+    
+    issues = [issue for check, issue in checks if not check]
+    
+    if issues:
+        st.warning("Quality check identified the following issues:")
+        for issue in issues:
+            st.write(f"- {issue}")
+        return None
+    
     return poem
 
-st.title("Tamil Poetry Generator")
+st.title("Advanced Tamil Poetry Generator")
 
 style = st.selectbox("Choose a poetry style:", ["Haiku", "Venba", "Free Verse"])
 theme = st.text_input("Enter a theme for your poem:")
@@ -99,7 +138,7 @@ if st.button("Generate Poem"):
     if theme:
         with st.spinner("கவிதை உருவாக்கப்படுகிறது... (Generating poem...)"):
             poem = generate_tamil_poetry(style, theme)
-            poem = quality_check(poem)  # Placeholder for additional quality control
+            poem = quality_check(poem)
         if poem:
             st.success("கவிதை வெற்றிகரமாக உருவாக்கப்பட்டது! (Poem generated successfully!)")
             st.markdown("## Your Tamil Poem:")
@@ -109,4 +148,16 @@ if st.button("Generate Poem"):
         st.warning("Please enter a theme for your poem.")
 
 st.sidebar.markdown("### About")
-st.sidebar.info("This app generates authentic Tamil poetry using AI. It creates meaningful, culturally rich poems with correct spelling and punctuation. It's an educational tool to explore Tamil poetic forms and cultural themes. Created with love by Vidhiya S B (www.x.com/Vidhiyasb)")
+st.sidebar.info("This advanced app generates authentic, high-quality Tamil poetry using AI. It creates deeply meaningful, culturally rich poems with impeccable spelling and punctuation. It's a sophisticated tool for exploring Tamil poetic forms, cultural themes, and literary traditions. Created with passion by Vidhiya S B (www.x.com/Vidhiyasb)")
+
+# Additional features
+st.sidebar.markdown("### Additional Resources")
+if st.sidebar.checkbox("Show Tamil Proverbs"):
+    st.sidebar.write("### Tamil Proverbs")
+    for proverb in tamil_proverbs:
+        st.sidebar.write(f"- {proverb}")
+
+if st.sidebar.checkbox("Show Tamil Literary Works"):
+    st.sidebar.write("### Famous Tamil Literary Works")
+    for work in tamil_literary_works:
+        st.sidebar.write(f"- {work}")
