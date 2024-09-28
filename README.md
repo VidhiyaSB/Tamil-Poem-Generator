@@ -40,9 +40,6 @@ The Tamil Poem Generator is an innovative AI-powered tool that creates diverse T
 - User feedback mechanism for continuous model improvement
 - Mobile application for on-the-go poem generation
 
-## Getting Started
-
-(Include instructions on how to set up and run the project, dependencies, etc.)
 
 ## Contributing
 
